@@ -28,8 +28,8 @@ def app_root
 end
 
 def setup_directory
-File.open('Gemfile', 'w') do |f|
-  f.write "gem 'thor-scmversion', path: '#{app_root}'"
+  File.open('Gemfile', 'w') do |f|
+    f.write "gem 'thor-scmversion', path: '#{app_root}'"
   end
   `bundle`
   Dir.entries(fixtures_dir).each do |entry|
