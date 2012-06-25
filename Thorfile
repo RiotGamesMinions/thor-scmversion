@@ -14,16 +14,16 @@ class ThorSCMVersion < Thor
 
   desc "install", "Build and install latest to system gems"
   def install
-    invoke "build"
-    system("gem install pkg/#{thor-scmversion-#{current_version}.gem}")
+    invoke "build", []
+    system("gem install pkg/thor-scmversion-#{current_version}.gem")
   end
 
   desc "release TYPE", "Bump version, make a build, and push to Rubygems"
   def release(type)
     @current_version = nil
     invoke "version:bump", [type]
-    invoke "build"
-    system("gem push pkg/#{thor-scmversion-#{current_version}.gem}")
+    invoke "build", []
+    system("gem push pkg/thor-scmversion-#{current_version}.gem")
   end
     
   private
