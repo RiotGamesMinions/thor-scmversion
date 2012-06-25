@@ -15,7 +15,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = ThorSCMVersion::VERSION
 
-  gem.add_dependency             'open4'
   gem.add_dependency             'thor'
   gem.add_development_dependency 'webmock'
   gem.add_development_dependency 'geminabox'

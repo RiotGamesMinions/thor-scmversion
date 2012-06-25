@@ -1,4 +1,3 @@
-require 'open4'
 require 'open3'
 
 module ThorSCMVersion
