@@ -36,14 +36,10 @@ module ThorSCMVersion
       def connection
         parse_and_set_p4_set
         check_environment
-        #p4.connect
-        #p4.run_login
         ShellUtils.sh "echo #{ENV["P4PASSWD"]} | p4 login"
         yield
       ensure
-        #p4.run_logout
         ShellUtils.sh "p4 logout"
-        #p4.disconnect
       end
     end
   end
@@ -65,16 +61,6 @@ module ThorSCMVersion
       `p4 edit -c default "#{self.version_file_path}"`
       File.open(self.version_file_path, 'w') { |f| f.write to_s }
       `p4 submit -d "#{description}"`
-      #Perforce.connection do
-      #new_changelist = p4.fetch_change
-      #new_changelist._Description = "Bump version to #{to_s}."
-      #saved_changelist = p4.save_change(new_changelist)
-      #changelist_number = saved_changelist[0].match(/(\d+)/).to_s.strip
-      #puts changelist_number
-      #p4.run_edit("-c", changelist_number, self.version_file_path)
-      #changelist = p4.fetch_change changelist_number
-      #p4.run_submit changelist
-      #end
     end
   end
 end
