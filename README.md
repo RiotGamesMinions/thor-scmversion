@@ -77,6 +77,13 @@ run `thor version:bump patch`. This will increment the patch, push the
 new tag, and write the VERSION file. Now the artifact you build will
 have the right version information, every time.
 
+### You manage the major and minor
+
+When you make significant changes, you can bump the major or minor
+number yourself with `thor version:bump minor`. This will create a tag
+with a .0 patch level, so the next build made by the server will be
+.1 patch level.
+
 ## Contributing
 
 1. Fork it
