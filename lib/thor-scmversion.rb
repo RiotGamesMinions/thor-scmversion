@@ -12,7 +12,9 @@ module ThorSCMVersion
     def bump(type)
       current_version.bump! type
       begin
+        say "Creating and pushing tags", :yellow
         current_version.tag
+        say "Writing files: #{version_files.join(', ')}", :yellow
         write_version
         say "Tagged: #{current_version}", :green
       rescue => e
@@ -39,7 +41,6 @@ module ThorSCMVersion
           f.write ver
         end
       end
-      
       ver
     end
 
