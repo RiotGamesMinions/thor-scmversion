@@ -26,6 +26,7 @@ module ThorSCMVersion
 
     desc "current", "Show current SCM tagged version"
     def current
+      write_version
       say current_version.to_s
     end
 
