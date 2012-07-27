@@ -16,6 +16,7 @@ module ThorSCMVersion
     VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$/
     class << self
       def from_path(path = '.')
+        ShellUtils.sh("git fetch --all")
         all_from_path(path).first || new(0,0,1)
       end
     end
