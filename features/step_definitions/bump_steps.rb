@@ -1,14 +1,23 @@
 Given /^I have a git project of version '(.*)'$/ do |version|
   Dir.chdir(origin_dir) do
     `git init`
+    $?.success?.should be_true
+    `git config receive.denyCurrentBranch ignore`
+    $?.success?.should be_true
   end
   Dir.chdir(project_dir) do
-    `git init`
+    `git clone file://#{origin_dir}/.git .`
+    $?.success?.should be_true
     `touch README`
+    $?.success?.should be_true
     `git add README`
+    $?.success?.should be_true
     `git commit -m "initial commit"`
+    $?.success?.should be_true
     `git tag -a -m "Version #{version}" #{version}`
-    `git remote add origin file://#{origin_dir}`
+    $?.success?.should be_true
+    `git push origin master -u`
+    $?.success?.should be_true
     setup_directory
   end
 end
@@ -29,6 +38,13 @@ Then /^the origin version should be '(.*)'$/ do |version|
   Dir.chdir(origin_dir) {
     ThorSCMVersion.versioner.from_path.to_s.should == version
   }
+end
+
+Given /^the origin version is '(.+)'$/ do |version|
+  Dir.chdir(origin_dir) {
+    cmd = %Q[git tag -a #{version} -m "Version #{version}"]
+    `#{cmd}`
+  }  
 end
 
 When /^I run `(.*)` from the temp directory$/ do |run|
@@ -74,3 +90,4 @@ Then /^the p4 server version should be '(.*)'$/ do |version|
     end
   end
 end
+

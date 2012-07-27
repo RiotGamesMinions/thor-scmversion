@@ -33,6 +33,13 @@ Feature: Bump
      Then the version should be '2.0.0'
      And the origin version should be '2.0.0'
 
+  Scenario: Bumping a patch version in Git
+    Given I have a git project of version '1.0.0'
+    And the origin version is '1.0.10'
+    When I run `bundle exec thor version:bump patch` from the temp directory
+    Then the version should be '1.0.11'
+    And the origin version should be '1.0.11'
+
    @p4 @wip
    Scenario: Bumping a patch version in Perforce
      Given I have a Perforce project of version '1.0.0'

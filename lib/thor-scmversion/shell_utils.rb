@@ -24,7 +24,7 @@ module ThorSCMVersion
           
           status = wait_thr.value
           output = stdout.readlines.join
-          
+
           if status.to_i == 0
             block.call(output) if block
           end
