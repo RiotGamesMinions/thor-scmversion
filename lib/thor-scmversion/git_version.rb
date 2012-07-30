@@ -27,7 +27,7 @@ module ThorSCMVersion
               else
                 :patch
               end
-      bump!(guess)#.downcase.to_sym)
+      bump!(guess)
     end
   end
 end
