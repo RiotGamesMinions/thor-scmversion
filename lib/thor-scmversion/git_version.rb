@@ -15,6 +15,19 @@ module ThorSCMVersion
     def tag
       ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
       ShellUtils.sh "git push --tags || true"
-    end 
+    end
+
+    def auto_bump
+      last_tag = self.class.from_path.to_s
+      logs = ShellUtils.sh "git log --abbrev-commit --format=oneline #{last_tag}.."
+      guess = if logs =~ /\[major\]|\#major/i
+                :major
+              elsif logs =~ /\[minor\]|\#minor/i
+                :minor
+              else
+                :patch
+              end
+      bump!(guess)#.downcase.to_sym)
+    end
   end
 end

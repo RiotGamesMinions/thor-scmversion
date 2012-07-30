@@ -32,6 +32,8 @@ module ThorSCMVersion
     
     def bump!(type)
       case type.to_sym
+      when :auto
+        self.auto_bump
       when :major
         self.major += 1
         self.minor = 0
@@ -42,13 +44,17 @@ module ThorSCMVersion
       when :patch
         self.patch += 1
       else
-        raise "Invalid release type: #{type}. Valid types are: major, minor, or patch"
+        raise "Invalid release type: #{type}. Valid types are: major, minor, patch, or auto"
       end
       raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_path
       self
     end
     
     def tag
+      raise NotImplementedError
+    end
+
+    def auto_bump
       raise NotImplementedError
     end
     
