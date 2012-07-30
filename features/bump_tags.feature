@@ -63,3 +63,11 @@ Feature: Guessing the level of a bump
     When I run `bundle exec thor version:bump auto` from the temp directory
     Then the version should be '2.0.0'
     And the origin version should be '2.0.0'
+
+  Scenario: changeset with a [MAJOR] tag
+    Given a commit message "This is an untagged commit"
+    And a commit message "this is another commit"
+    And a commit message "this is a big change to the project [MAJOR]"
+    When I run `bundle exec thor version:bump auto` from the temp directory
+    Then the version should be '2.0.0'
+    And the origin version should be '2.0.0'
