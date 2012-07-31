@@ -46,7 +46,7 @@ Now when you list your thor tasks you'll see 2 new ones.
     
     version
     -------
-    thor version:bump TYPE  # Bump version number (type is major, minor or patch)
+    thor version:bump TYPE  # Bump version number (type is major, minor, patch or auto)
     thor version:current    # Show current SCM tagged version
 
 ### Remove your VERSION file from source control
@@ -83,6 +83,15 @@ When you make significant changes, you can bump the major or minor
 number yourself with `thor version:bump minor`. This will create a tag
 with a .0 patch level, so the next build made by the server will be
 .1 patch level.
+
+### Auto bumping
+
+If you include #major or #minor in the subject of commits, and run
+`thor version:bump auto` it will see if any major or minor level changes
+are included since the last tag, and use the appropriate version. This works
+especially well with a CI server, allowing you to never have to directly
+manage versions at all.
+
 
 ## Contributing
 

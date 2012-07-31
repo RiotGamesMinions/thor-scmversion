@@ -8,7 +8,7 @@ module ThorSCMVersion
   class Tasks < Thor
     namespace "version"
 
-    desc "bump TYPE", "Bump version number (type is major, minor or patch)"
+    desc "bump TYPE", "Bump version number (type is major, minor, patch or auto)"
     def bump(type)
       current_version.bump! type
       begin
