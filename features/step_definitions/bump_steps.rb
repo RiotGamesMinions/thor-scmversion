@@ -22,6 +22,12 @@ Given /^I have a git project of version '(.*)'$/ do |version|
   end
 end
 
+Given /^a commit message "(.*?)"$/ do |msg|
+  Dir.chdir(project_dir) do
+    `git commit --allow-empty -m "#{msg}"`
+  end
+end
+
 Then /^the version should be '(.*)'$/ do |version|
   Dir.chdir(project_dir) {
     ThorSCMVersion.versioner.from_path.to_s.should == version
