@@ -16,8 +16,12 @@ module ThorSCMVersion
     VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$/
     class << self
       def from_path(path = '.')
-        ShellUtils.sh("git fetch --all")
+        retrieve_tags
         all_from_path(path).first || new(0,0,1)
+      end
+
+      def retrieve_tags
+        # noop
       end
     end
     attr_accessor :major
