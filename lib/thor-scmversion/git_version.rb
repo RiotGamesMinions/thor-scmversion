@@ -10,6 +10,10 @@ module ThorSCMVersion
           version_tags.collect { |tag| new(*tag.split('.')) }.sort.reverse
         end
       end
+
+      def retrieve_tags
+        ShellUtils.sh("git fetch --all")
+      end
     end
         
     def tag
