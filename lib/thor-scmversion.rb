@@ -36,13 +36,7 @@ module ThorSCMVersion
     end
 
     def write_version
-      ver = current_version.to_s
-      version_files.each do |ver_file|
-        File.open(ver_file, 'w+') do |f| 
-          f.write ver
-        end
-      end
-      ver
+      current_version.write_version(version_files)
     end
 
     eval "def source_root ; Pathname.new File.dirname(__FILE__) ; end"
@@ -51,5 +45,8 @@ module ThorSCMVersion
        source_root.join('VERSION')
       ]
     end
+    
+
+
   end
 end
