@@ -92,6 +92,9 @@ are included since the last tag, and use the appropriate version. This works
 especially well with a CI server, allowing you to never have to directly
 manage versions at all.
 
+NOTE: auto bumping currently only works for Git repos. For Perforce repos,
+auto is the same as patch.
+
 
 ## Contributing
 
