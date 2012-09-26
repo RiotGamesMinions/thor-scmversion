@@ -36,8 +36,17 @@ module ThorSCMVersion
     end
 
     def write_version
-      current_version.write_version
+      current_version.write_version(version_files)
     end
+
+    eval "def source_root ; Pathname.new File.dirname(__FILE__) ; end"
+    def version_files
+      [
+       source_root.join('VERSION')
+      ]
+    end
+    
+
 
   end
 end

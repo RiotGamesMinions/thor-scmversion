@@ -55,8 +55,8 @@ module ThorSCMVersion
       self
     end
 
-    def write_version
-      version_files.each do |ver_file|
+    def write_version(files = [ScmVersion::VERSION_FILENAME])
+      files.each do |ver_file|
         File.open(ver_file, 'w+') do |f| 
           f.write self.to_s
         end
@@ -64,13 +64,6 @@ module ThorSCMVersion
       self
     end
 
-    eval "def source_root ; Pathname.new File.dirname(__FILE__) ; end"
-    def version_files
-      [
-       source_root.join(VERSION_FILENAME)
-      ]
-    end
-    
     def tag
       raise NotImplementedError
     end

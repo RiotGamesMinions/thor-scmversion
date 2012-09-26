@@ -63,8 +63,9 @@ module ThorSCMVersion
       `p4 submit -d "#{description}"`
     end
 
-    def write_version
-      super unless File.exists? File.join(self.version_file_path, ScmVersion::VERSION_FILENAME)
+    def write_version(files = [ScmVersion::VERSION_FILENAME])
+      non_existant_files = files.reject { |file| File.exist? file }
+      super(non_existant_files) unless non_existant_files.empty?
     end
 
     def auto_bump
