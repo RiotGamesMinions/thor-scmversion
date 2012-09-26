@@ -14,6 +14,7 @@ module ThorSCMVersion
     include Comparable
     
     VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$/
+    VERSION_FILENAME = 'VERSION'
     class << self
       def from_path(path = '.')
         retrieve_tags
@@ -53,7 +54,16 @@ module ThorSCMVersion
       raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_path
       self
     end
-    
+
+    def write_version(files = [ScmVersion::VERSION_FILENAME])
+      files.each do |ver_file|
+        File.open(ver_file, 'w+') do |f| 
+          f.write self.to_s
+        end
+      end
+      self
+    end
+
     def tag
       raise NotImplementedError
     end
