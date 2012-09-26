@@ -47,7 +47,7 @@ module ThorSCMVersion
   class P4Version < ScmVersion
     class << self
       def all_from_path(path)
-        file_path = File.expand_path(File.join(path, 'VERSION'))
+        file_path = File.expand_path(File.join(path, ScmVersion::VERSION_FILENAME))
         version = new(*File.read(file_path).strip.split("."))
         version.version_file_path = file_path
         [version]
@@ -61,6 +61,10 @@ module ThorSCMVersion
       `p4 edit -c default "#{self.version_file_path}"`
       File.open(self.version_file_path, 'w') { |f| f.write to_s }
       `p4 submit -d "#{description}"`
+    end
+
+    def write_version
+      super unless File.exists? File.join(self.version_file_path, ScmVersion::VERSION_FILENAME)
     end
 
     def auto_bump

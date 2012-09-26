@@ -15,7 +15,7 @@ module ThorSCMVersion
         say "Creating and pushing tags", :yellow
         current_version.tag
         say "Writing files: #{version_files.join(', ')}", :yellow
-        write_version
+        current_version.write_version
         say "Tagged: #{current_version}", :green
       rescue => e
         say "Tagging #{current_version} failed due to error", :red
@@ -35,21 +35,5 @@ module ThorSCMVersion
       @current_version ||= ThorSCMVersion.versioner.from_path
     end
 
-    def write_version
-      ver = current_version.to_s
-      version_files.each do |ver_file|
-        File.open(ver_file, 'w+') do |f| 
-          f.write ver
-        end
-      end
-      ver
-    end
-
-    eval "def source_root ; Pathname.new File.dirname(__FILE__) ; end"
-    def version_files
-      [
-       source_root.join('VERSION')
-      ]
-    end
   end
 end

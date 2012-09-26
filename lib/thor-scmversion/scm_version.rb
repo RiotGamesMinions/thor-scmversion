@@ -14,6 +14,7 @@ module ThorSCMVersion
     include Comparable
     
     VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$/
+    VERSION_FILENAME = 'VERSION'
     class << self
       def from_path(path = '.')
         retrieve_tags
@@ -52,6 +53,23 @@ module ThorSCMVersion
       end
       raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_path
       self
+    end
+
+    def write_version
+      ver = current_version.to_s
+      version_files.each do |ver_file|
+        File.open(ver_file, 'w+') do |f| 
+          f.write ver
+        end
+      end
+      ver
+    end
+
+    eval "def source_root ; Pathname.new File.dirname(__FILE__) ; end"
+    def version_files
+      [
+       source_root.join(VERSION_FILENAME)
+      ]
     end
     
     def tag
