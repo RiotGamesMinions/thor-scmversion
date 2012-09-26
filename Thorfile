@@ -18,8 +18,8 @@ class ThorSCMVersion < Thor
     system("gem install pkg/thor-scmversion-#{current_version}.gem")
   end
 
-  desc "release TYPE", "Bump version, make a build, and push to Rubygems"
-  def release(type)
+  desc "release [TYPE]", "Bump version, make a build, and push to Rubygems"
+  def release(type='auto')
     @current_version = nil
     invoke "version:bump", [type]
     invoke "build", []
