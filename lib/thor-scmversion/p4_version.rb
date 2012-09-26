@@ -62,5 +62,10 @@ module ThorSCMVersion
       File.open(self.version_file_path, 'w') { |f| f.write to_s }
       `p4 submit -d "#{description}"`
     end
+
+    def auto_bump
+      # TODO: actually implement this
+      bump!(:patch)
+    end
   end
 end
