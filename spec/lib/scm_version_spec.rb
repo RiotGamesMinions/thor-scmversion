@@ -24,4 +24,13 @@ here
       ENV["P4USER"].should == "kallan"
     end
   end
+
+  describe P4Version do
+    it 'should parse labels correctly' do
+      described_class.parse_label("Label testing-1.0.0 2012/10/01 'Created by kallan. '", "testing").should eq(["1","0","0"])
+      described_class.parse_label("Label testing-1.0.1 2012/10/01 'Created by kallan. '", "testing").should eq(["1","0","1"])
+      described_class.parse_label("Label testing-2.0.5 2012/10/01 'Created by kallan. '", "testing").should eq(["2","0","5"])
+      described_class.parse_label("Label testing-4.2.2 2012/10/01 'Created by kallan. '", "testing").should eq(["4","2","2"])
+    end
+  end
 end
