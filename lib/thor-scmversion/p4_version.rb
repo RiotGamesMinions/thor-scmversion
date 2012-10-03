@@ -48,30 +48,28 @@ module ThorSCMVersion
     class << self
       def all_from_path(path)
         Dir.chdir(path) do
-          p4_depot_path = ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
-          p4_module_name = File.expand_path(path).split("/").last
-
-          all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\"").split("\n")
-          thor_scmversion_labels = get_thor_scmversion_labels(all_labels_array, p4_module_name)
+          all_labels_array = ShellUtils.sh("p4 labels -e \"#{module_name(path)}*\"").split("\n")
+          thor_scmversion_labels = get_thor_scmversion_labels(all_labels_array, module_name(path))
 
           current_versions = thor_scmversion_labels.collect do |label|
-            new_instance = new(*parse_label(label, p4_module_name))
-            new_instance.p4_depot_path = p4_depot_path
-            new_instance.p4_module_name = p4_module_name
-            new_instance.path = path
-            new_instance
+            new_instance = new(*parse_label(label, module_name(path)))
           end.sort.reverse
 
           if current_versions.empty?
             first_instance = new(0, 0, 0)
-            first_instance.p4_depot_path = p4_depot_path
-            first_instance.p4_module_name = p4_module_name
-            first_instance.path = path
           end 
 
           current_versions << first_instance if current_versions.empty?
           current_versions
         end
+      end
+
+      def depot_path(path)
+        ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
+      end
+
+      def module_name(path)
+        File.expand_path(path).split("/").last
       end
 
       def parse_label(label, p4_module_name)
@@ -82,11 +80,16 @@ module ThorSCMVersion
         labels.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}        
       end
     end
+
+    def initialize(major=0, minor=0, patch=0)
+      self.p4_depot_path = self.class.depot_path('.')
+      self.p4_module_name = self.class.module_name('.')
+      super(major, minor, patch)
+    end
     
     attr_accessor :version_file_path
     attr_accessor :p4_depot_path
     attr_accessor :p4_module_name
-    attr_accessor :path
 
     def retrieve_tags
       # noop
@@ -94,8 +97,6 @@ module ThorSCMVersion
     end
     
     def tag
-      #`p4 label -o #{get_label_name}`
-      #`p4 tag -l #{get_label_name} #{File.join(File.expand_path(path), "")}...#head`
       `#{cat_or_type} #{File.expand_path(get_p4_label_file)} | p4 label -i`
     end
 
