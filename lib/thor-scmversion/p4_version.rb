@@ -52,14 +52,24 @@ module ThorSCMVersion
           p4_module_name = File.expand_path(path).split("/").last
 
           all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\"").split("\n")
-          thor_scmversion_labels = all_labels_array.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
+          thor_scmversion_labels = get_thor_scmversion_labels(all_labels_array, p4_module_name)
 
           current_versions = thor_scmversion_labels.collect do |label|
-            new_instance = new(*parse_label(label, p4_module_name), p4_depot_path, p4_module_name, path)
+            new_instance = new(*parse_label(label, p4_module_name))
+            new_instance.p4_depot_path = p4_depot_path
+            new_instance.p4_module_name = p4_module_name
+            new_instance.path = path
             new_instance
           end.sort.reverse
 
-          current_versions << new(0, 0, 0, p4_depot_path, p4_module_name, path) if current_versions.empty?
+          if current_versions.empty?
+            first_instance = new(0, 0, 0)
+            first_instance.p4_depot_path = p4_depot_path
+            first_instance.p4_module_name = p4_module_name
+            first_instance.path = path
+          end 
+
+          current_versions << first_instance if current_versions.empty?
           current_versions
         end
       end
@@ -67,21 +77,16 @@ module ThorSCMVersion
       def parse_label(label, p4_module_name)
         label.split(" ")[1].gsub("#{p4_module_name}-", "").split('.')
       end
+
+      def get_thor_scmversion_labels(labels, p4_module_name)
+        labels.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}        
+      end
     end
     
     attr_accessor :version_file_path
     attr_accessor :p4_depot_path
     attr_accessor :p4_module_name
     attr_accessor :path
-
-    def initialize(major, minor, patch, p4_depot_path, p4_module_name, path)
-      @major = major.to_i
-      @minor = minor.to_i
-      @patch = patch.to_i
-      @p4_depot_path = p4_depot_path
-      @p4_module_name = p4_module_name
-      @path = path
-    end
 
     def retrieve_tags
       # noop
