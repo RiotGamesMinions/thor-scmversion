@@ -48,10 +48,10 @@ module ThorSCMVersion
     class << self
       def all_from_path(path)
         Dir.chdir(path) do
-          p4_depot_files = ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
+          p4_depot_path = ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
           p4_module_name = File.expand_path(path).split("/").last
 
-          all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\" #{p4_depot_files}/...").split("\n")
+          all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\" #{p4_depot_path}/...").split("\n")
           thor_scmversion_labels = all_labels_array.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
 
           current_versions = thor_scmversion_labels.collect do |label|
