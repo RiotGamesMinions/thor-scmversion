@@ -54,12 +54,9 @@ module ThorSCMVersion
           all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\" #{p4_depot_files}/...").split("\n")
           thor_scmversion_labels = all_labels_array.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
 
-          puts thor_scmversion_labels.to_s
-
           current_versions = thor_scmversion_labels.collect do |label|
-            new_instance = new(*label.split(" ")[1].gsub("#{p4_module_name}-", "").split('.'))
-            new_instance.p4_module_name = p4_module_name
-            new_instance.path = path
+            puts parse_label(label, p4_module_name).to_s
+            new_instance = new(*parse_label(label, p4_module_name), p4_module_name, path)
             new_instance
           end.sort.reverse
 
@@ -68,13 +65,17 @@ module ThorSCMVersion
           current_versions
         end
       end
+
+      def parse_label(label, p4_module_name)
+        label.split(" ")[1].gsub("#{p4_module_name}-", "").split('.')
+      end
     end
     
     attr_accessor :version_file_path
     attr_accessor :p4_module_name
     attr_accessor :path
 
-    def initialize(major=0, minor=0, patch=0, p4_module_name, path)
+    def initialize(major, minor, patch, p4_module_name, path)
       @major = major.to_i
       @minor = minor.to_i
       @patch = patch.to_i
