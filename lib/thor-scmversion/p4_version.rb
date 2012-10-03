@@ -91,7 +91,7 @@ module ThorSCMVersion
     def tag
       #`p4 label -o #{get_label_name}`
       #`p4 tag -l #{get_label_name} #{File.join(File.expand_path(path), "")}...#head`
-      `cat #{File.expand_path(get_p4_label_file)} | p4 label -i`
+      `#{cat_or_type} #{File.expand_path(get_p4_label_file)} | p4 label -i`
     end
 
     def auto_bump
@@ -131,6 +131,15 @@ View:
         File.open(File.join(tmp_dir, "p4_label.tmp"), "w") do |file|
           file.write(get_p4_label_template)
           file
+        end
+      end
+
+      def cat_or_type
+        case RbConfig::CONFIG["arch"]
+        when /darwin/
+          "cat"
+        when /cygwin|mswin|mingw|bccwin|wince|emx/
+          "type"
         end
       end
   end
