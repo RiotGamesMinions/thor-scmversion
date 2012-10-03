@@ -55,12 +55,10 @@ module ThorSCMVersion
           thor_scmversion_labels = all_labels_array.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
 
           current_versions = thor_scmversion_labels.collect do |label|
-            puts parse_label(label, p4_module_name).to_s
             new_instance = new(*parse_label(label, p4_module_name), p4_module_name, path)
             new_instance
           end.sort.reverse
 
-          puts current_versions.to_s
           current_versions << new(0, 0, 0, p4_module_name, path) if current_versions.empty?
           current_versions
         end
