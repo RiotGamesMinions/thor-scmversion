@@ -1,4 +1,5 @@
 require 'pathname'
+require 'tmpdir'
 require 'thor'
 require 'thor-scmversion/scm_version'
 require 'thor-scmversion/git_version'

@@ -51,15 +51,15 @@ module ThorSCMVersion
           p4_depot_path = ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
           p4_module_name = File.expand_path(path).split("/").last
 
-          all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\" #{p4_depot_path}/...").split("\n")
+          all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\"").split("\n")
           thor_scmversion_labels = all_labels_array.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
 
           current_versions = thor_scmversion_labels.collect do |label|
-            new_instance = new(*parse_label(label, p4_module_name), p4_module_name, path)
+            new_instance = new(*parse_label(label, p4_module_name), p4_depot_path, p4_module_name, path)
             new_instance
           end.sort.reverse
 
-          current_versions << new(0, 0, 0, p4_module_name, path) if current_versions.empty?
+          current_versions << new(0, 0, 0, p4_depot_path, p4_module_name, path) if current_versions.empty?
           current_versions
         end
       end
@@ -70,13 +70,15 @@ module ThorSCMVersion
     end
     
     attr_accessor :version_file_path
+    attr_accessor :p4_depot_path
     attr_accessor :p4_module_name
     attr_accessor :path
 
-    def initialize(major, minor, patch, p4_module_name, path)
+    def initialize(major, minor, patch, p4_depot_path, p4_module_name, path)
       @major = major.to_i
       @minor = minor.to_i
       @patch = patch.to_i
+      @p4_depot_path = p4_depot_path
       @p4_module_name = p4_module_name
       @path = path
     end
@@ -87,8 +89,9 @@ module ThorSCMVersion
     end
     
     def tag
-      `p4 label -o #{get_label_name}`
-      `p4 tag -l #{get_label_name} #{File.join(File.expand_path(path), "")}...#head`
+      #`p4 label -o #{get_label_name}`
+      #`p4 tag -l #{get_label_name} #{File.join(File.expand_path(path), "")}...#head`
+      `cat #{File.expand_path(get_p4_label_file)} | p4 label -i`
     end
 
     def auto_bump
@@ -100,6 +103,35 @@ module ThorSCMVersion
 
       def get_label_name
         "#{p4_module_name}-#{self}"  
+      end
+
+      def get_p4_label_template
+        %{
+Label:  #{get_label_name}
+
+Description:
+  Created by thor-scmversion.
+
+Owner: #{ENV["P4USER"]}
+
+Options:  unlocked
+
+Revision: @#{get_last_submitted_p4_changelist}
+
+View:
+  #{p4_depot_path}/...}
+      end
+
+      def get_last_submitted_p4_changelist
+        `p4 changes -s submitted -m 1 #{p4_depot_path}/...`.split(' ')[1]
+      end
+
+      def get_p4_label_file
+        tmp_dir = Dir.mktmpdir
+        File.open(File.join(tmp_dir, "p4_label.tmp"), "w") do |file|
+          file.write(get_p4_label_template)
+          file
+        end
       end
   end
 end
