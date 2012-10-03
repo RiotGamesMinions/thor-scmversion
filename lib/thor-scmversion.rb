@@ -1,3 +1,4 @@
+require 'pathname'
 require 'thor'
 require 'thor-scmversion/scm_version'
 require 'thor-scmversion/git_version'
@@ -45,8 +46,5 @@ module ThorSCMVersion
        source_root.join('VERSION')
       ]
     end
-    
-
-
   end
 end
