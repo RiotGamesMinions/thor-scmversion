@@ -47,30 +47,60 @@ module ThorSCMVersion
   class P4Version < ScmVersion
     class << self
       def all_from_path(path)
-        file_path = File.expand_path(File.join(path, ScmVersion::VERSION_FILENAME))
-        version = new(*File.read(file_path).strip.split("."))
-        version.version_file_path = file_path
-        [version]
+        Dir.chdir(path) do
+          p4_depot_files = ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
+          p4_module_name = File.expand_path(path).split("/").last
+
+          all_labels_array = ShellUtils.sh("p4 labels -e \"#{p4_module_name}*\" #{p4_depot_files}/...").split("\n")
+          thor_scmversion_labels = all_labels_array.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
+
+          puts thor_scmversion_labels.to_s
+
+          current_versions = thor_scmversion_labels.collect do |label|
+            new_instance = new(*label.split(" ")[1].gsub("#{p4_module_name}-", "").split('.'))
+            new_instance.p4_module_name = p4_module_name
+            new_instance.path = path
+            new_instance
+          end.sort.reverse
+
+          puts current_versions.to_s
+          current_versions << new(0, 0, 0, p4_module_name, path) if current_versions.empty?
+          current_versions
+        end
       end
     end
     
     attr_accessor :version_file_path
-    
-    def tag
-      description = "Bump version to #{to_s}."
-      `p4 edit -c default "#{self.version_file_path}"`
-      File.open(self.version_file_path, 'w') { |f| f.write to_s }
-      `p4 submit -d "#{description}"`
+    attr_accessor :p4_module_name
+    attr_accessor :path
+
+    def initialize(major=0, minor=0, patch=0, p4_module_name, path)
+      @major = major.to_i
+      @minor = minor.to_i
+      @patch = patch.to_i
+      @p4_module_name = p4_module_name
+      @path = path
     end
 
-    def write_version(files = [ScmVersion::VERSION_FILENAME])
-      # NOOP
-      # p4 implementation depends on the file existing, so this method is not necessary.
+    def retrieve_tags
+      # noop
+      # p4 always has labels available, you just have to ask the server for them.
+    end
+    
+    def tag
+      `p4 label -o #{get_label_name}`
+      `p4 tag -l #{get_label_name} #{File.join(File.expand_path(path), "")}...#head`
     end
 
     def auto_bump
       # TODO: actually implement this
       bump!(:patch)
     end
+
+    private
+
+      def get_label_name
+        "#{p4_module_name}-#{self}"  
+      end
   end
 end
