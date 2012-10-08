@@ -41,7 +41,7 @@ module ThorSCMVersion
       @current_version ||= ThorSCMVersion.versioner.from_path
     end
 
-    def write_version(version_file_path)
+    def write_version(version_file_path=nil)
       files_to_write = version_files
       files_to_write << File.join(File.expand_path(version_file_path), 'VERSION') if version_file_path
       current_version.write_version(files_to_write)

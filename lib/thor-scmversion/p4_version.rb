@@ -48,7 +48,7 @@ module ThorSCMVersion
     class << self
       def all_from_path(path)
         Dir.chdir(path) do
-          all_labels_array = ShellUtils.sh("p4 labels -e \"#{module_name(path)}*\"").split("\n")
+          all_labels_array = `p4 labels -e \"#{module_name(path)}*\"`.split("\n")
           thor_scmversion_labels = get_thor_scmversion_labels(all_labels_array, module_name(path))
 
           current_versions = thor_scmversion_labels.collect do |label|
@@ -65,7 +65,7 @@ module ThorSCMVersion
       end
 
       def depot_path(path)
-        ShellUtils.sh("p4 dirs #{File.expand_path(path)}").chomp
+        `p4 dirs #{File.expand_path(path)}`.chomp
       end
 
       def module_name(path)
@@ -97,7 +97,11 @@ module ThorSCMVersion
     end
     
     def tag
-      `#{cat_or_type} #{File.expand_path(get_p4_label_file)} | p4 label -i`
+      if windows?
+        `type #{File.expand_path(get_p4_label_file).gsub(File::Separator, File::ALT_SEPARATOR)} | p4 label -i`
+      else
+        `cat #{File.expand_path(get_p4_label_file)} | p4 label -i`
+      end
     end
 
     def auto_bump
@@ -140,13 +144,8 @@ View:
         end
       end
 
-      def cat_or_type
-        case RbConfig::CONFIG["arch"]
-        when /darwin/
-          "cat"
-        when /cygwin|mswin|mingw|bccwin|wince|emx/
-          "type"
-        end
+      def windows?
+        RbConfig::CONFIG["arch"] =~ /cygwin|mswin|mingw|bccwin|wince|emx/
       end
   end
 end
