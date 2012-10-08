@@ -1,3 +1,5 @@
+require 'pathname'
+require 'tmpdir'
 require 'thor'
 require 'thor-scmversion/scm_version'
 require 'thor-scmversion/git_version'
@@ -24,9 +26,13 @@ module ThorSCMVersion
       end
     end
 
+    method_option :version_file_path,
+      :type => :string,
+      :default => nil,
+      :desc => "An additional path to copy a VERSION file to on the file system."
     desc "current", "Show current SCM tagged version"
     def current
-      write_version
+      write_version(options[:version_file_path])
       say current_version.to_s
     end
 
@@ -35,8 +41,10 @@ module ThorSCMVersion
       @current_version ||= ThorSCMVersion.versioner.from_path
     end
 
-    def write_version
-      current_version.write_version(version_files)
+    def write_version(version_file_path=nil)
+      files_to_write = version_files
+      files_to_write << File.join(File.expand_path(version_file_path), 'VERSION') if version_file_path
+      current_version.write_version(files_to_write)
     end
 
     eval "def source_root ; Pathname.new File.dirname(__FILE__) ; end"
@@ -45,8 +53,5 @@ module ThorSCMVersion
        source_root.join('VERSION')
       ]
     end
-    
-
-
   end
 end
