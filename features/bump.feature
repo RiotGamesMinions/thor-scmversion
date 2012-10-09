@@ -3,7 +3,7 @@ Feature: Bump
   I want to be able to bump the version of a project's with a simple command
   So that I don't have to do it manually
 
-  Scenario Outline: Bumping a version in Git
+  Scenario Outline: Bumping a version
     Given I have a <scm> project of version '<starting version>'
     When I run `bundle exec thor version:bump <bump type>` from the temp directory
     Then the version should be '<resulting version>'
@@ -27,4 +27,4 @@ Feature: Bump
     And the origin version is '1.0.10'
     When I run `bundle exec thor version:bump patch` from the temp directory
     Then the version should be '1.0.11'
-    And the git version should be '1.0.11'
+    And the git server version should be '1.0.11'
