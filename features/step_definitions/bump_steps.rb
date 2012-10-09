@@ -34,13 +34,13 @@ Then /^the version should be '(.*)'$/ do |version|
   }
 end
 
-Then /^the version should be '(.+)' in the Perforce project directory$/ do |version|
+Then /^the version should be '(.+)' in the p4 project directory$/ do |version|
   Dir.chdir(perforce_project_dir) {
     ThorSCMVersion.versioner.from_path.to_s.should == version
   }
 end
 
-Then /^the origin version should be '(.*)'$/ do |version|
+Then /^the git server version should be '(.*)'$/ do |version|
   Dir.chdir(origin_dir) {
     ThorSCMVersion.versioner.from_path.to_s.should == version
   }
@@ -59,13 +59,13 @@ When /^I run `(.*)` from the temp directory$/ do |run|
   }
 end
 
-When /^I run `(.*)` from the Perforce project directory$/ do |run|
+When /^I run `(.*)` from the p4 project directory$/ do |run|
   Dir.chdir(perforce_project_dir) {
     `#{run}`
   }
 end
 
-Given /^I have a Perforce project of version '(.*)'$/ do |version|
+Given /^I have a p4 project of version '(.*)'$/ do |version|
   ENV['P4PORT']    = 'p4server.example.com:1666'
   ENV['P4USER']    = 'tester'
   ENV['P4PASSWD']  = 'tester'
