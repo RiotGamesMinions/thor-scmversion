@@ -5,14 +5,15 @@ require 'thor-scmversion/scm_version'
 require 'thor-scmversion/git_version'
 require 'thor-scmversion/p4_version'
 require 'thor-scmversion/shell_utils'
+require 'thor-scmversion/prerelease'
 
 module ThorSCMVersion
   class Tasks < Thor
     namespace "version"
 
-    desc "bump TYPE", "Bump version number (type is major, minor, patch or auto)"
-    def bump(type)
-      current_version.bump! type
+    desc "bump TYPE [PRERELEASE_TYPE]", "Bump version number (type is major, minor, patch, prerelease or auto)"
+    def bump(type, prerelease_type = nil)
+      current_version.bump! type, prerelease_type
       begin
         say "Creating and pushing tags", :yellow
         current_version.tag

@@ -29,13 +29,14 @@ module ThorSCMVersion
     attr_accessor :minor
     attr_accessor :patch
     
-    def initialize(major=0, minor=0, patch=0)
+    def initialize(major = 0, minor = 0, patch = 0, prerelease = nil)
       @major = major.to_i
       @minor = minor.to_i
       @patch = patch.to_i
+      @prerelease = prerelease
     end
     
-    def bump!(type)
+    def bump!(type, prerelease_type)
       case type.to_sym
       when :auto
         self.auto_bump
@@ -48,6 +49,11 @@ module ThorSCMVersion
         self.patch = 0
       when :patch
         self.patch += 1
+      when :prerelease
+        if prerelease_type += self.prerelease.type
+          self.prerelease += 1
+        else
+        end
       else
         raise "Invalid release type: #{type}. Valid types are: major, minor, patch, or auto"
       end
@@ -73,7 +79,9 @@ module ThorSCMVersion
     end
     
     def to_s
-      "#{major}.#{minor}.#{patch}"
+      s = "#{major}.#{minor}.#{patch}"
+      s += "-#{prerelease}" unless prerelease.nil?
+      s
     end
     alias_method :version, :to_s
     
