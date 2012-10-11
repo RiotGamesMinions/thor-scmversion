@@ -1,11 +1,12 @@
 require 'pathname'
 require 'tmpdir'
 require 'thor'
+require 'thor-scmversion/prerelease'
 require 'thor-scmversion/scm_version'
 require 'thor-scmversion/git_version'
 require 'thor-scmversion/p4_version'
 require 'thor-scmversion/shell_utils'
-require 'thor-scmversion/prerelease'
+require 'thor-scmversion/errors'
 
 module ThorSCMVersion
   class Tasks < Thor

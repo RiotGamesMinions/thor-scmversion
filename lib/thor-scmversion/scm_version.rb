@@ -13,12 +13,18 @@ module ThorSCMVersion
   class ScmVersion
     include Comparable
     
-    VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$/
+    VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)-?(?<prerelease>#{Prerelease::FORMAT})?$/
     VERSION_FILENAME = 'VERSION'
     class << self
       def from_path(path = '.')
         retrieve_tags
         all_from_path(path).first || new(0,0,1)
+      end
+
+      def from_tag(tag)
+        base_version, prerelease_string = tag.split /-/
+        major, minor, patch = base_version.split /\./
+        new(major, minor, patch, Prerelease.from_string(prerelease_string))
       end
 
       def retrieve_tags
@@ -28,6 +34,7 @@ module ThorSCMVersion
     attr_accessor :major
     attr_accessor :minor
     attr_accessor :patch
+    attr_accessor :prerelease
     
     def initialize(major = 0, minor = 0, patch = 0, prerelease = nil)
       @major = major.to_i
@@ -36,7 +43,7 @@ module ThorSCMVersion
       @prerelease = prerelease
     end
     
-    def bump!(type, prerelease_type)
+    def bump!(type, prerelease_type = nil)
       case type.to_sym
       when :auto
         self.auto_bump
@@ -50,9 +57,15 @@ module ThorSCMVersion
       when :patch
         self.patch += 1
       when :prerelease
-        if prerelease_type += self.prerelease.type
-          self.prerelease += 1
+        if self.prerelease
+          if prerelease_type.nil? || prerelease_type == self.prerelease.type
+            self.prerelease += 1
+          else
+            self.prerelease = Prerelease.new(prerelease_type)
+          end
         else
+          self.patch += 1
+          self.prerelease = Prerelease.new(prerelease_type)
         end
       else
         raise "Invalid release type: #{type}. Valid types are: major, minor, patch, or auto"
@@ -89,7 +102,7 @@ module ThorSCMVersion
       return unless other.is_a?(self.class)
       return 0 if self.version == other.version
       
-      [:major, :minor, :patch].each do |segment|
+      [:major, :minor, :patch, :prerelease].each do |segment|
         next      if self.send(segment) == other.send(segment)
         return  1 if self.send(segment) > other.send(segment)
         return -1 if self.send(segment) < other.send(segment)
