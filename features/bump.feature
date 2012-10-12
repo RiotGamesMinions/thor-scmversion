@@ -3,7 +3,6 @@ Feature: Bump
   I want to be able to bump the version of a project's with a simple command
   So that I don't have to do it manually
 
-  @stuff
   Scenario Outline: Bumping a version
     Given I have a <scm> project of version '<starting version>'
     When I run `bundle exec thor version:bump <bump type>` from the temp directory
