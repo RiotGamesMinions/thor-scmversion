@@ -29,6 +29,13 @@ module ThorSCMVersion
     attr_reader :version
     attr_reader :type
 
+    # initialize
+    #
+    # @param [String] type Type of prerelease
+    # @param [responds_to? :to_i] version Version of the given type of prerelease
+    #
+    # Examples:
+    #   'beta', 1 #=> x.x.x-beta.1
     def initialize(type = DEFAULT_TYPE, version = 1)
       @version = version.to_i
       @type = type.nil? || type.empty? ? DEFAULT_TYPE : type
