@@ -81,10 +81,10 @@ module ThorSCMVersion
       end
     end
 
-    def initialize(major=0, minor=0, patch=0, prerelease=nil)
+    def initialize(major = 0, minor = 0, patch = 0, prerelease = nil, build = 1)
       self.p4_depot_path = self.class.depot_path('.')
       self.p4_module_name = self.class.module_name('.')
-      super(major, minor, patch, prerelease)
+      super(major, minor, patch, prerelease, build)
     end
     
     attr_accessor :version_file_path

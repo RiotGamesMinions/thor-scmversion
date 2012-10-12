@@ -10,21 +10,23 @@ Feature: Bump
     And the <scm> server version should be '<resulting version>'
 
     Examples:
-      | scm | starting version | bump type         | resulting version |
-      | git |            1.0.0 | patch             |             1.0.1 |
-      | git |            1.0.0 | minor             |             1.1.0 |
-      | git |            1.0.0 | major             |             2.0.0 |
-      | git |            1.1.5 | minor             |             1.2.0 |
-      | git |            1.1.5 | major             |             2.0.0 |
-      | git |            1.0.0 | prerelease        |     1.0.1-alpha.1 |
-      | git |            1.0.0 | prerelease someth |    1.0.1-someth.1 |
-      | git |    1.0.0-alpha.1 | prerelease        |     1.0.0-alpha.2 |
-      | git |    1.0.0-alpha.5 | prerelease beta   |      1.0.0-beta.1 |
-      | p4  |            1.0.0 | patch             |             1.0.1 |
-      | p4  |            1.0.0 | minor             |             1.1.0 |
-      | p4  |            1.0.0 | major             |             2.0.0 |
-      | p4  |            1.1.5 | minor             |             1.2.0 |
-      | p4  |            1.1.5 | major             |             2.0.0 |
+      | scm | starting version | bump type         |     resulting version |
+      | git |            1.0.0 | patch             |                 1.0.1 |
+      | git |            1.0.0 | minor             |                 1.1.0 |
+      | git |            1.0.0 | major             |                 2.0.0 |
+      | git |            1.1.5 | minor             |                 1.2.0 |
+      | git |            1.1.5 | major             |                 2.0.0 |
+      | git |            1.0.0 | prerelease        |         1.0.1-alpha.1 |
+      | git |            1.0.0 | prerelease someth |        1.0.1-someth.1 |
+      | git |    1.0.0-alpha.1 | prerelease        |         1.0.0-alpha.2 |
+      | git |    1.0.0-alpha.5 | prerelease beta   |          1.0.0-beta.1 |
+      | git |            1.0.0 | build             |         1.0.0+build.2 |
+      | git |    1.0.0-alpha.3 | build             | 1.0.0-alpha.3+build.2 |
+      | p4  |            1.0.0 | patch             |                 1.0.1 |
+      | p4  |            1.0.0 | minor             |                 1.1.0 |
+      | p4  |            1.0.0 | major             |                 2.0.0 |
+      | p4  |            1.1.5 | minor             |                 1.2.0 |
+      | p4  |            1.1.5 | major             |                 2.0.0 |
 
   Scenario: Bumping a patch version in Git when the server has an advanced version not yet fetched
     Given I have a git project of version '1.0.0'

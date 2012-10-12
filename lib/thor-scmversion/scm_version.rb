@@ -24,7 +24,7 @@ module ThorSCMVersion
     #   1.2.3.4 #=> invalid
     #   1.2.3-alpha.1 #=> valid
     #   1.2.3-alpha #=> invalid
-    VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)-?(?<prerelease>#{Prerelease::FORMAT})?$/
+    VERSION_FORMAT = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)-?(?<prerelease>#{Prerelease::FORMAT})?(\+build\.)?(?<build>\d+)?$/
 
     # Default file to write the current version to
     VERSION_FILENAME = 'VERSION'
@@ -43,9 +43,8 @@ module ThorSCMVersion
       # @param [String] tag
       # @return [ScmVersion]
       def from_tag(tag)
-        base_version, prerelease_string = tag.split /-/
-        major, minor, patch = base_version.split /\./
-        new(major, minor, patch, Prerelease.from_string(prerelease_string))
+        matchdata = tag.match VERSION_FORMAT
+        new(matchdata[:major], matchdata[:minor], matchdata[:patch], Prerelease.from_string(matchdata[:prerelease]), matchdata[:build])
       end
 
       # In distributed SCMs, tags must be fetched from the server to
@@ -59,12 +58,14 @@ module ThorSCMVersion
     attr_accessor :minor
     attr_accessor :patch
     attr_accessor :prerelease
+    attr_accessor :build
 
-    def initialize(major = 0, minor = 0, patch = 0, prerelease = nil)
+    def initialize(major = 0, minor = 0, patch = 0, prerelease = nil, build = 1)
       @major = major.to_i
       @minor = minor.to_i
       @patch = patch.to_i
       @prerelease = prerelease
+      @build = build.nil? ? 1 : build.to_i
     end
 
     # Bumps the version in place
@@ -77,12 +78,9 @@ module ThorSCMVersion
       when :auto
         self.auto_bump
       when :major
-        self.major += 1
-        self.minor = 0
-        self.patch = 0
+        self.major += 1        
       when :minor
         self.minor += 1
-        self.patch = 0
       when :patch
         self.patch += 1
       when :prerelease
@@ -96,10 +94,37 @@ module ThorSCMVersion
           self.patch += 1
           self.prerelease = Prerelease.new(prerelease_type)
         end
+      when :build
+        self.build += 1
       else
         raise "Invalid release type: #{type}. Valid types are: major, minor, patch, or auto"
       end
       raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_path
+      reset_for type unless type == :auto
+      self
+    end
+
+    # Reset levels lower than the type being reset for
+    #
+    # @param [Symbol] type Type under which all segments are to be reset
+    def reset_for(type)
+      matched = false
+      [[:major, Proc.new {
+          self.minor = 0
+        }],
+       [:minor, Proc.new {
+          self.patch = 0 
+        }],
+       [:patch, Proc.new {
+          self.prerelease = nil
+        }],
+       [:prerelease, Proc.new { 
+          self.build = 1
+        }]].each do |matcher, reset_proc|
+        next unless matched or type.to_sym == matcher
+        matched = true
+        reset_proc.call
+      end
       self
     end
 
@@ -126,19 +151,20 @@ module ThorSCMVersion
     def auto_bump(prerelease_type = nil)
       raise NotImplementedError
     end
-    
+
     def to_s
       s = "#{major}.#{minor}.#{patch}"
-      s += "-#{prerelease}" unless prerelease.nil?
+      s << "-#{prerelease}" unless prerelease.nil?
+      s << "+build.#{build}" unless build < 2
       s
     end
     alias_method :version, :to_s
-    
+
     def <=>(other)
       return unless other.is_a?(self.class)
       return 0 if self.version == other.version
       
-      [:major, :minor, :patch, :prerelease].each do |segment|
+      [:major, :minor, :patch, :prerelease, :build].each do |segment|
         next      if self.send(segment) == other.send(segment)
         return  1 if self.send(segment) > other.send(segment)
         return -1 if self.send(segment) < other.send(segment)
