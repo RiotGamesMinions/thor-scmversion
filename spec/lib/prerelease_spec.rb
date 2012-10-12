@@ -46,8 +46,8 @@ module ThorSCMVersion
       it 'should return nil if the str passed in is nil' do
         described_class.from_string(nil).should be_nil
       end
-      %w[1 1.1 1.alpha alpha alpha.alpha .1].each do |str|
-        it "with the captures #{str} should raise an error if an invalid format is provided" do
+      %w[1 1.alpha alpha alpha.alpha .1].each do |str|
+        it "should raise an error if an invalid format (#{str}) is provided" do
           -> { Prerelease.from_string(str) }.should raise_error(InvalidPrereleaseFormatError)
         end
       end

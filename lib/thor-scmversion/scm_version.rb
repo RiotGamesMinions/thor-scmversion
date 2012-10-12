@@ -87,7 +87,7 @@ module ThorSCMVersion
       raise NotImplementedError
     end
 
-    def auto_bump
+    def auto_bump(prerelease_type = nil)
       raise NotImplementedError
     end
     

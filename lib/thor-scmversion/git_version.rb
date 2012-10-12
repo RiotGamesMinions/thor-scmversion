@@ -21,6 +21,7 @@ module ThorSCMVersion
       ShellUtils.sh "git push --tags || true"
     end
 
+    # Check the commit messages to see what type of bump is required
     def auto_bump
       last_tag = self.class.from_path.to_s
       logs = ShellUtils.sh "git log --abbrev-commit --format=oneline #{last_tag}.."
@@ -28,10 +29,13 @@ module ThorSCMVersion
                 :major
               elsif logs =~ /\[minor\]|\#minor/i
                 :minor
+              elsif logs =~ /\[prerelease\s?(#{Prerelease::TYPE_FORMAT})?\]|\#prerelease\-?(#{Prerelease::TYPE_FORMAT})?/
+                prerelease_type = $1 || $2
+                :prerelease
               else
                 :patch
               end
-      bump!(guess)
+      bump!(guess, prerelease_type)
     end
   end
 end

@@ -1,6 +1,7 @@
 module ThorSCMVersion
   class Prerelease
-    FORMAT = /([A-Za-z]+)\.(\d+)/.freeze
+    TYPE_FORMAT = /[A-Za-z0-9]+/
+    FORMAT = /(#{TYPE_FORMAT})\.(\d+)/.freeze
     DEFAULT_TYPE = 'alpha'
 
     class << self
