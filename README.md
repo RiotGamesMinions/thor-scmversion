@@ -46,8 +46,26 @@ Now when you list your thor tasks you'll see 2 new ones.
     
     version
     -------
-    thor version:bump TYPE  # Bump version number (type is major, minor, patch or auto)
+    thor version:bump TYPE [PRERELEASE_TYPE]  # Bump version number (type is major, minor, patch, prerelease or auto)
+                                              # Prerelease allows an additional parameter to be passed which is used 
+                                              # as the prerelease type.
     thor version:current    # Show current SCM tagged version
+
+Usage Examples:
+  $ thor version:current
+  1.2.1
+  $ thor version:bump auto
+  1.2.2
+  $ thor version:bump major
+  2.0.0
+  $ thor version:bump prerelease
+  2.0.1-alpha.1
+  $ thor version:bump prerelease
+  2.0.1-alpha.2
+  $ thor version:bump prerelease beta
+  2.0.1-beta.1
+  $ thor version:bump minor
+  2.1.0
 
 ### Remove your VERSION file from source control
 
@@ -77,7 +95,7 @@ run `thor version:bump patch`. This will increment the patch, push the
 new tag, and write the VERSION file. Now the artifact you build will
 have the right version information, every time.
 
-### You manage the major and minor
+### You manage the major, minor and prerelease
 
 When you make significant changes, you can bump the major or minor
 number yourself with `thor version:bump minor`. This will create a tag
