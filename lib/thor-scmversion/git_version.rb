@@ -32,8 +32,10 @@ module ThorSCMVersion
               elsif logs =~ /\[prerelease\s?(#{Prerelease::TYPE_FORMAT})?\]|\#prerelease\-?(#{Prerelease::TYPE_FORMAT})?/
                 prerelease_type = $1 || $2
                 :prerelease
-              else
+              elsif logs =~ /\[patch\]|\#patch/i
                 :patch
+              else
+                :build
               end
       bump!(guess, prerelease_type)
     end
