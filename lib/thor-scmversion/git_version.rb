@@ -7,7 +7,7 @@ module ThorSCMVersion
         Dir.chdir(path) do
           tags = Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
           version_tags = tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
-          version_tags.collect { |tag| new(*tag.split('.')) }.sort.reverse
+          version_tags.collect { |tag| from_tag(tag) }.sort.reverse
         end
       end
 
@@ -21,6 +21,7 @@ module ThorSCMVersion
       ShellUtils.sh "git push --tags || true"
     end
 
+    # Check the commit messages to see what type of bump is required
     def auto_bump
       last_tag = self.class.from_path.to_s
       logs = ShellUtils.sh "git log --abbrev-commit --format=oneline #{last_tag}.."
@@ -28,10 +29,15 @@ module ThorSCMVersion
                 :major
               elsif logs =~ /\[minor\]|\#minor/i
                 :minor
-              else
+              elsif logs =~ /\[prerelease\s?(#{Prerelease::TYPE_FORMAT})?\]|\#prerelease\-?(#{Prerelease::TYPE_FORMAT})?/
+                prerelease_type = $1 || $2
+                :prerelease
+              elsif logs =~ /\[patch\]|\#patch/i
                 :patch
+              else
+                :build
               end
-      bump!(guess)
+      bump!(guess, prerelease_type)
     end
   end
 end
