@@ -95,23 +95,24 @@ run `thor version:bump patch`. This will increment the patch, push the
 new tag, and write the VERSION file. Now the artifact you build will
 have the right version information, every time.
 
-### You manage the major, minor and prerelease
+### You manage the major, minor patch and prerelease
 
-When you make significant changes, you can bump the major or minor
+When you make significant changes, you can bump the major, minor or patch
 number yourself with `thor version:bump minor`. This will create a tag
 with a .0 patch level, so the next build made by the server will be
 .1 patch level.
 
 ### Auto bumping
 
-If you include #major or #minor in the subject of commits, and run
-`thor version:bump auto` it will see if any major or minor level changes
+If you include #major, #minor or #patch in the subject of commits, and run
+`thor version:bump auto` it will see if any major, minor or patch level changes
 are included since the last tag, and use the appropriate version. This works
 especially well with a CI server, allowing you to never have to directly
-manage versions at all.
+manage versions at all. If no commits are tagged, the build number for the
+current version will be bumped instead.
 
 NOTE: auto bumping currently only works for Git repos. For Perforce repos,
-auto is the same as patch.
+auto is the same as build.
 
 
 ## Contributing
