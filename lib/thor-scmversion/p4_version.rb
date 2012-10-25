@@ -106,9 +106,9 @@ module ThorSCMVersion
     
     def tag
       if ThorSCMVersion.windows?
-        `type #{File.expand_path(get_p4_label_file).gsub(File::Separator, File::ALT_SEPARATOR)} | p4 label -i`
+        `type "#{File.expand_path(get_p4_label_file).gsub(File::Separator, File::ALT_SEPARATOR)}" | p4 label -i`
       else
-        `cat #{File.expand_path(get_p4_label_file)} | p4 label -i`
+        `cat "#{File.expand_path(get_p4_label_file)}" | p4 label -i`
       end
     end
 
