@@ -1,4 +1,10 @@
 module ThorSCMVersion
+  class << self
+    def windows?
+      RbConfig::CONFIG["arch"] =~ /cygwin|mswin|mingw|bccwin|wince|emx/
+    end
+  end
+
   class MissingP4ConfigException < StandardError
     def initialize(config_option)
       @config_option = config_option
@@ -65,11 +71,13 @@ module ThorSCMVersion
       end
 
       def depot_path(path)
-        `p4 dirs #{File.expand_path(path)}`.chomp
+        path = File.expand_path(path)
+        path = path.gsub(File::Separator, File::ALT_SEPARATOR) if ThorSCMVersion.windows?
+        `p4 where "#{path}/..."`.split(" ").first.gsub("/...", "")
       end
 
       def module_name(path)
-        File.expand_path(path).split("/").last
+        depot_path(path).gsub("//", "").gsub("/", "-")
       end
 
       def parse_label(label, p4_module_name)
@@ -97,10 +105,10 @@ module ThorSCMVersion
     end
     
     def tag
-      if windows?
-        `type #{File.expand_path(get_p4_label_file).gsub(File::Separator, File::ALT_SEPARATOR)} | p4 label -i`
+      if ThorSCMVersion.windows?
+        `type "#{File.expand_path(get_p4_label_file).gsub(File::Separator, File::ALT_SEPARATOR)}" | p4 label -i`
       else
-        `cat #{File.expand_path(get_p4_label_file)} | p4 label -i`
+        `cat "#{File.expand_path(get_p4_label_file)}" | p4 label -i`
       end
     end
 
@@ -142,10 +150,6 @@ View:
           file.write(get_p4_label_template)
           file
         end
-      end
-
-      def windows?
-        RbConfig::CONFIG["arch"] =~ /cygwin|mswin|mingw|bccwin|wince|emx/
       end
   end
 end
