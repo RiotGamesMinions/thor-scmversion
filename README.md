@@ -13,13 +13,13 @@ file conflicts.
 ## Integrating into your project
 
 Since Thor is written in Ruby, you'll need Ruby to make this work, on
-your workstation and on your CI server. See http://whatisthor.com/ for
+your workstation and on your CI server. See <http://whatisthor.com/> for
 more in how to use Thor.
 
 ### Get the gem
 
 If you don't already have a Gemfile, you should probably get one. See
-http://gembundler.com/ for more details on Bundler and Gemfiles. Not
+<http://gembundler.com/> for more details on Bundler and Gemfiles. Not
 required, but will save you a lot of hassle.
 
 Add this line to your application's Gemfile:
@@ -52,20 +52,21 @@ Now when you list your thor tasks you'll see 2 new ones.
     thor version:current    # Show current SCM tagged version
 
 Usage Examples:
-  $ thor version:current
-  1.2.1
-  $ thor version:bump auto
-  1.2.2
-  $ thor version:bump major
-  2.0.0
-  $ thor version:bump prerelease
-  2.0.1-alpha.1
-  $ thor version:bump prerelease
-  2.0.1-alpha.2
-  $ thor version:bump prerelease beta
-  2.0.1-beta.1
-  $ thor version:bump minor
-  2.1.0
+
+    $ thor version:current
+    1.2.1
+    $ thor version:bump auto
+    1.2.2
+    $ thor version:bump major
+    2.0.0
+    $ thor version:bump prerelease
+    2.0.1-alpha.1
+    $ thor version:bump prerelease
+    2.0.1-alpha.2
+    $ thor version:bump prerelease beta
+    2.0.1-beta.1
+    $ thor version:bump minor
+    2.1.0
 
 ### Remove your VERSION file from source control
 
