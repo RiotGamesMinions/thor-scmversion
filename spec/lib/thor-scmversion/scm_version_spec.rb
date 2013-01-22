@@ -28,14 +28,19 @@ module ThorSCMVersion
         it 'patch' do
           subject.bump!(:patch).to_s.should == '1.2.4'
         end
+        describe 'auto' do
+          it "should respect a default level of bump" do
+            subject.bump!(:auto, default: :patch).to_s.should == '1.2.4'
+          end
+        end
         describe 'prerelease' do
           describe 'with explicit type' do
             it do
-              subject.bump!(:prerelease, 'someth').to_s.should == '1.2.3-someth.1'
+              subject.bump!(:prerelease, prerelease_type: 'someth').to_s.should == '1.2.3-someth.1'
             end
             it 'with no prerelease on previous version' do
               subject.prerelease = nil
-              subject.bump!(:prerelease, 'someth').to_s.should == '1.2.4-someth.1'
+              subject.bump!(:prerelease, prerelease_type: 'someth').to_s.should == '1.2.4-someth.1'
             end
           end
           describe 'with default type' do

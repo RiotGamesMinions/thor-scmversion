@@ -73,10 +73,10 @@ module ThorSCMVersion
     # @param [Symbol] type Type of bump to be performed
     # @param [String] prerelease_type Type of prerelease to bump to when doing a :prerelease bump
     # @return [ScmVersion]
-    def bump!(type, prerelease_type = nil)
+    def bump!(type, options = {})
       case type.to_sym
       when :auto
-        self.auto_bump
+        self.auto_bump(options)
       when :major
         self.major += 1        
       when :minor
@@ -84,6 +84,7 @@ module ThorSCMVersion
       when :patch
         self.patch += 1
       when :prerelease
+        prerelease_type = options[:prerelease_type]
         if self.prerelease
           if prerelease_type.nil? || prerelease_type == self.prerelease.type
             self.prerelease += 1
@@ -148,7 +149,7 @@ module ThorSCMVersion
 
     # Perform a bump by reading recent commit messages in the SCM
     # Abstract method. Must be implemented by subclasses.
-    def auto_bump(prerelease_type = nil)
+    def auto_bump(options)
       raise NotImplementedError
     end
 

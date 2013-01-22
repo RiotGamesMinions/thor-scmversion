@@ -13,8 +13,9 @@ module ThorSCMVersion
     namespace "version"
 
     desc "bump TYPE [PRERELEASE_TYPE]", "Bump version number (type is major, minor, patch, prerelease or auto)"
+    method_option :default, type: :string, aliases: "-d"
     def bump(type, prerelease_type = nil)
-      current_version.bump! type, prerelease_type
+      current_version.bump! type, options.merge(prerelease_type: prerelease_type)
       begin
         say "Creating and pushing tags", :yellow
         current_version.tag
