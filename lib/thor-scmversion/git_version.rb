@@ -22,7 +22,7 @@ module ThorSCMVersion
     end
 
     # Check the commit messages to see what type of bump is required
-    def auto_bump
+    def auto_bump(options)
       last_tag = self.class.from_path.to_s
       logs = ShellUtils.sh "git log --abbrev-commit --format=oneline #{last_tag}.."
       guess = if logs =~ /\[major\]|\#major/i
@@ -35,9 +35,9 @@ module ThorSCMVersion
               elsif logs =~ /\[patch\]|\#patch/i
                 :patch
               else
-                :build
+                options[:default] or :build
               end
-      bump!(guess, prerelease_type)
+      bump!(guess, prerelease_type: prerelease_type)
     end
   end
 end

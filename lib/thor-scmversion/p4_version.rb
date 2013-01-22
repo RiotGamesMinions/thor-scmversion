@@ -112,7 +112,7 @@ module ThorSCMVersion
       end
     end
 
-    def auto_bump
+    def auto_bump(options)
       # TODO: actually implement this
       bump!(:patch)
     end
