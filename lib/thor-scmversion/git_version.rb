@@ -17,7 +17,11 @@ module ThorSCMVersion
     end
         
     def tag
-      ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
+      begin
+        ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
+      rescue => e
+        raise GitTagError.new(self.to_s)
+      end
       ShellUtils.sh "git push --tags || true"
     end
 

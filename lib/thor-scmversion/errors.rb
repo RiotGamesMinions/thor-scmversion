@@ -23,4 +23,15 @@ module ThorSCMVersion
   class InvalidPrereleaseFormatError < TagFormatError
     def to_s; super + " Format must be: #{Prerelease::FORMAT.inspect}."; end
   end
+
+  class GitError < SCMVersionError; end
+  class GitTagError < GitError
+    def initialize(tag)
+      @tag = tag
+    end
+
+    def to_s
+      msg = "Tried to tag #{@tag}, but it already exists! Either build from the latest tag at this bump level or choose a lower order bump level."
+    end
+  end
 end

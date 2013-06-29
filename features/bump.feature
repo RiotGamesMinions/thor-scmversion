@@ -39,6 +39,17 @@ Feature: Bump
     When I run `bundle exec thor version:bump patch` from the temp directory
     Then the git server version should be '1.0.1'
     
+  @wip
+  Scenario: Bumping a version where the next version that would be bumped to is already tagged in the repository
+    Given I have a git project of version '1.0.0'
+    And there is a version '1.0.1' on another branch
+    When I run `bundle exec thor version:bump patch` from the temp directory
+    Then the output should contain:
+    """
+    Unable to bump "patch" because the tag "1.0.1" already exists in the repository. Please select a lower order bump level for this branch.
+    """
+    And the exit status should be 1
+
   Scenario: Bumping a patch version in Git when the server has an advanced version not yet fetched
     Given I have a git project of version '1.0.0'
     And the origin version is '1.0.10'
