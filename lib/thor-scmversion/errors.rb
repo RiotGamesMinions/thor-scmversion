@@ -26,6 +26,7 @@ module ThorSCMVersion
 
   class GitError < SCMVersionError; end
   class GitTagError < GitError
+    status_code(100)
     def initialize(tag)
       @tag = tag
     end
