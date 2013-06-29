@@ -5,7 +5,7 @@ module ThorSCMVersion
     class << self          
       def all_from_path(path)
         Dir.chdir(path) do
-          tags = Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
+          tags = Open3.popen3("git describe --tags --match *.*.*") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
           version_tags = tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
           version_tags.collect { |tag| from_tag(tag) }.sort.reverse
         end

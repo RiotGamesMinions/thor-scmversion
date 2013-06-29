@@ -97,3 +97,23 @@ Then /^the p4 server version should be '(.*)'$/ do |version|
   end
 end
 
+Then(/^there is a version '(.+)' on another branch$/) do |version|
+  Dir.chdir(project_dir) do
+    `git checkout -b another_branch`
+    $?.success?.should be_true
+    `echo anotherbranch > README`
+    $?.success?.should be_true
+    `git commit -am 'commit'`
+    $?.success?.should be_true
+    `git tag #{version}`
+    $?.success?.should be_true
+    `git checkout master`
+    $?.success?.should be_true
+  end
+end
+
+Given(/^there is a tag '(.*)'$/) do |version|
+  Dir.chdir(project_dir) do
+    `git tag #{version}`
+  end
+end
