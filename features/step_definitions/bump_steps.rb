@@ -53,10 +53,9 @@ Given /^the origin version is '(.+)'$/ do |version|
   }  
 end
 
-When /^I run `(.*)` from the temp directory$/ do |run|
-  Dir.chdir(project_dir) {
-    `#{run}`
-  }
+When /^I run `(.*)` from the temp directory$/ do |command|
+  @dirs = [project_dir]
+  run(command)
 end
 
 When /^I run `(.*)` from the p4 project directory$/ do |run|
