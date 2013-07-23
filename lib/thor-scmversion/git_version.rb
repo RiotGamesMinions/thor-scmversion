@@ -5,10 +5,15 @@ module ThorSCMVersion
     class << self          
       def all_from_path(path)
         Dir.chdir(path) do
-          tags = Open3.popen3("git describe --tags --match *.*.*") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
-          version_tags = tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
-          version_tags.collect { |tag| from_tag(tag) }.sort.reverse
+          tags = filter_tags_by_current_branch(Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/))
+          tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
+            .collect { |tag| from_tag(tag) }.sort.reverse
+            .select { |tag| contained_in_current_branch?(tag) }
         end
+      end
+
+      def contained_in_current_branch?(tag)
+        ShellUtils.sh("git branch --contains #{tag}") =~ /\*/
       end
 
       def retrieve_tags
@@ -18,7 +23,7 @@ module ThorSCMVersion
         
     def tag
       begin
-        ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
+        ShellUtils.sh("git tag -a -m \"Version #{self}\" #{self}")
       rescue => e
         raise GitTagError.new(self.to_s)
       end
