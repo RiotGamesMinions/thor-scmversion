@@ -16,7 +16,7 @@ Given /^I have a git project of version '(.*)'$/ do |version|
     $?.success?.should be_true
     `git tag -a -m "Version #{version}" #{version}`
     $?.success?.should be_true
-    `git push origin master -u`
+    `git push origin master -u --tags`
     $?.success?.should be_true
     setup_directory
   end
