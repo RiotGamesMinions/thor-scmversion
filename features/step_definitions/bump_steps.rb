@@ -58,10 +58,10 @@ Given /^the origin version is '(.+)'$/ do |version|
   }  
 end
 
-When /^I run `(.*)` from the temp directory$/ do |command|
+When /^I run `(.*)` from the temp directory( and expect a non-zero exit)?$/ do |command, nonzero_exit|
   Dir.chdir(project_dir) {
     out = `#{command}`
-    unless $?.success?
+    unless $?.success? or nonzero_exit
       puts out
       fail
     end

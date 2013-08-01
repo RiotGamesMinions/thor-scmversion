@@ -42,7 +42,7 @@ Feature: Bump
   Scenario: Bumping a version where the next version that would be bumped to is already tagged in the repository
     Given I have a git project of version '1.0.0'
     And there is a version '1.0.1' on another branch
-    When I run `bundle exec thor version:bump patch` from the temp directory
+    When I run `bundle exec thor version:bump patch` from the temp directory and expect a non-zero exit
     Then the git server version should be '1.0.0'
 
   Scenario: Bumping a patch version in Git when the server has an advanced version not yet fetched
