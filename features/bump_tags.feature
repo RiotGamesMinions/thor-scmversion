@@ -5,11 +5,12 @@ Feature: Guessing the level of a bump
 
   Scenario Outline: changeset tags
     Given I have a git project of version '<starting version>'
-    And a commit message "<message 1>"
-    And a commit message "<message 2>"
-    And a commit message "<message 3>"
+    And a commit with the message "<message 1>" on the "master" branch
+    And a commit with the message "<message 2>" on the "master" branch
+    And a commit with the message "<message 3>" on the "master" branch
     When I run `bundle exec thor version:bump auto` from the temp directory
     Then the version should be '<resulting version>'
+    And I run `git push origin master --tags` from the temp directory
     And the <scm> server version should be '<resulting version>'
 
   Examples:

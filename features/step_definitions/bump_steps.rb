@@ -22,9 +22,11 @@ Given /^I have a git project of version '(.*)'$/ do |version|
   end
 end
 
-Given /^a commit message "(.*?)"$/ do |msg|
+Given /^a commit with the message "(.*?)" on the "(.*?)" branch$/ do |msg, branch|
   Dir.chdir(project_dir) do
-    `git commit --allow-empty -m "#{msg}"`
+    `echo #{Time.now} > Timefile`
+    `git add Timefile`
+    `git commit -m "#{msg}"`
   end
 end
 
@@ -55,7 +57,11 @@ end
 
 When /^I run `(.*)` from the temp directory$/ do |command|
   Dir.chdir(project_dir) {
-    `#{command}`
+    out = `#{command}`
+    unless $?.success?
+      puts out
+      fail
+    end
   }
 end
 
