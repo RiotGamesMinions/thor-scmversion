@@ -10,6 +10,8 @@ Feature: Guessing the level of a bump
     And a commit with the message "<message 3>" on the "master" branch
     When I run `bundle exec thor version:bump auto` from the temp directory
     Then the version should be '<resulting version>'
+    # TODO: Figure out how to set up remote branch tracking so this
+    # does not have to be called explicitly
     And I run `git push origin master --tags` from the temp directory
     And the <scm> server version should be '<resulting version>'
 
