@@ -6,9 +6,14 @@ module ThorSCMVersion
       def all_from_path(path)
         Dir.chdir(path) do
           tags = Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
-          version_tags = tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
-          version_tags.collect { |tag| from_tag(tag) }.sort.reverse
+          tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
+            .collect { |tag| from_tag(tag) }
+            .select { |tag| contained_in_current_branch?(tag) }.sort.reverse
         end
+      end
+
+      def contained_in_current_branch?(tag)
+        ShellUtils.sh("git branch --contains #{tag}") =~ /\*/
       end
 
       def retrieve_tags
@@ -17,7 +22,11 @@ module ThorSCMVersion
     end
         
     def tag
-      ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
+      begin
+        ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
+      rescue => e
+        raise GitTagDuplicateError.new(self.to_s)
+      end
       ShellUtils.sh "git push --tags || true"
     end
 

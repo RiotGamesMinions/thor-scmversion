@@ -24,8 +24,12 @@ module ThorSCMVersion
         say "Tagged: #{current_version}", :green
       rescue => e
         say "Tagging #{current_version} failed due to error", :red
-        say e, :red
-        exit 1
+        say e.to_s, :red
+        if e.respond_to? :status_code
+          exit e.status_code
+        else
+          exit 1
+        end
       end
     end
 
