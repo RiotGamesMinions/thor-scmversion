@@ -1,3 +1,5 @@
+require 'securerandom'
+
 Given /^I have a git project of version '(.*)'$/ do |version|
   Dir.chdir(origin_dir) do
     `git init`
@@ -24,9 +26,10 @@ end
 
 Given /^a commit with the message "(.*?)" on the "(.*?)" branch$/ do |msg, branch|
   Dir.chdir(project_dir) do
-    `echo #{Time.now} > Timefile`
-    `git add Timefile`
+    `echo #{SecureRandom.uuid} > Randomfile`
+    `git add Randomfile`
     `git commit -m "#{msg}"`
+    `git push origin #{branch}`
   end
 end
 
