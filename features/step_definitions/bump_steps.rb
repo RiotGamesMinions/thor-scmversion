@@ -1,3 +1,5 @@
+require 'securerandom'
+
 Given /^I have a git project of version '(.*)'$/ do |version|
   Dir.chdir(origin_dir) do
     `git init`
@@ -16,15 +18,18 @@ Given /^I have a git project of version '(.*)'$/ do |version|
     $?.success?.should be_true
     `git tag -a -m "Version #{version}" #{version}`
     $?.success?.should be_true
-    `git push origin master -u`
+    `git push origin master -u --tags`
     $?.success?.should be_true
     setup_directory
   end
 end
 
-Given /^a commit message "(.*?)"$/ do |msg|
+Given /^a commit with the message "(.*?)" on the "(.*?)" branch$/ do |msg, branch|
   Dir.chdir(project_dir) do
-    `git commit --allow-empty -m "#{msg}"`
+    `echo #{SecureRandom.uuid} > Randomfile`
+    `git add Randomfile`
+    `git commit -m "#{msg}"`
+    `git push origin #{branch}`
   end
 end
 
@@ -53,9 +58,13 @@ Given /^the origin version is '(.+)'$/ do |version|
   }  
 end
 
-When /^I run `(.*)` from the temp directory$/ do |run|
+When /^I run `(.*)` from the temp directory( and expect a non-zero exit)?$/ do |command, nonzero_exit|
   Dir.chdir(project_dir) {
-    `#{run}`
+    out = `#{command}`
+    unless $?.success? or nonzero_exit
+      puts out
+      fail
+    end
   }
 end
 
@@ -97,3 +106,23 @@ Then /^the p4 server version should be '(.*)'$/ do |version|
   end
 end
 
+Then(/^there is a version '(.+)' on another branch$/) do |version|
+  Dir.chdir(project_dir) do
+    `git checkout -b another_branch`
+    $?.success?.should be_true
+    `echo anotherbranch > README`
+    $?.success?.should be_true
+    `git commit -am 'commit'`
+    $?.success?.should be_true
+    `git tag #{version}`
+    $?.success?.should be_true
+    `git checkout master`
+    $?.success?.should be_true
+  end
+end
+
+Given(/^there is a tag '(.*)'$/) do |version|
+  Dir.chdir(project_dir) do
+    `git tag #{version}`
+  end
+end
