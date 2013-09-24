@@ -126,3 +126,11 @@ Given(/^there is a tag '(.*)'$/) do |version|
     `git tag #{version}`
   end
 end
+
+Given(/^.git is a file pointing to the .git folder in a parent module$/) do
+  project_git_path = File.join(project_dir, '.git')
+  git_folder_path  = File.join(parent_module_dir, '.git')
+  File.directory?( project_git_path ).should be_true
+  File.rename project_git_path, git_folder_path
+  `echo "gitdir: #{ git_folder_path }" > "#{ project_git_path }"`
+end

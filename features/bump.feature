@@ -51,3 +51,10 @@ Feature: Bump
     When I run `bundle exec thor version:bump patch` from the temp directory
     Then the version should be '1.0.11'
     And the git server version should be '1.0.11'
+
+   Scenario: Bumping a version in a git submodule
+     Given I have a git project of version '1.2.3'
+     And .git is a file pointing to the .git folder in a parent module
+     When I run `bundle exec thor version:bump patch ` from the temp directory
+     Then the version should be '1.2.4'
+     And the git server version should be '1.2.4'
