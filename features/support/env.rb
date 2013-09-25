@@ -19,6 +19,10 @@ def origin_dir
   @origindir ||= Dir.mktmpdir
 end
 
+def parent_module_dir
+  @parentmoduledir ||= Dir.mktmpdir
+end
+
 def fixtures_dir
   File.join(File.dirname(__FILE__), "..", "fixtures")
 end
