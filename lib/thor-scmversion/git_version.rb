@@ -2,7 +2,7 @@ require 'open3'
 
 module ThorSCMVersion
   class GitVersion < ScmVersion
-    class << self          
+    class << self
       def all_from_path(path)
         Dir.chdir(path) do
           tags = Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
@@ -20,14 +20,15 @@ module ThorSCMVersion
         ShellUtils.sh("git fetch --all")
       end
     end
-        
+
     def tag
       begin
         ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"
       rescue => e
         raise GitTagDuplicateError.new(self.to_s)
       end
-      ShellUtils.sh "git push --tags || true"
+      remote = ShellUtils.sh("git config branch.`git name-rev --name-only HEAD`.remote").chomp
+      ShellUtils.sh "git push  #{remote} refs/tags/#{self} || true"
     end
 
     # Check the commit messages to see what type of bump is required
