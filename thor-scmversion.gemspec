@@ -15,7 +15,9 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = ThorSCMVersion::VERSION
 
-  gem.add_dependency             'thor'
+  gem.add_dependency 'thor'
+  gem.add_dependency 'mixlib-shellout'
+
   gem.add_development_dependency 'webmock'
   gem.add_development_dependency 'geminabox'
   gem.add_development_dependency 'spork'
