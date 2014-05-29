@@ -5,10 +5,22 @@ module ThorSCMVersion
     #
     # @return [#kind_of? ScmVersion]
     def versioner
-      if(File.exist?  (".git"))
+      if is_git?
         return GitVersion
       else
         return P4Version
+      end
+    end
+
+    def is_git?
+      file_exists?(Dir.pwd, '.git')
+    end
+
+    def file_exists?(current_dir, file)
+      return true if File.exist?(file)
+      Dir.chdir('..') do
+        return false if Dir.pwd == current_dir
+        file_exists?(current_dir, file)
       end
     end
   end
