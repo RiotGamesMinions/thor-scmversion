@@ -12,7 +12,8 @@ module ThorSCMVersion
   class Tasks < Thor
     namespace "version"
 
-    desc "bump TYPE [PRERELEASE_TYPE]", "Bump version number (type is major, minor, patch, prerelease or auto)"
+    desc "bump TYPE [PRERELEASE_TYPE]", "Bump version number (type is major, minor, patch, prerelease or auto)"\
+    "in VERSION file and create tag."
     method_option :default, type: :string, aliases: "-d"
     def bump(type, prerelease_type = nil)
       current_version.bump! type, options.merge(prerelease_type: prerelease_type)
@@ -21,6 +22,45 @@ module ThorSCMVersion
         current_version.tag
         say "Writing files: #{version_files.join(', ')}", :yellow
         write_version
+        say "Tagged: #{current_version}", :green
+      rescue => e
+        say "Tagging #{current_version} failed due to error", :red
+        say e.to_s, :red
+        if e.respond_to? :status_code
+          exit e.status_code
+        else
+          exit 1
+        end
+      end
+    end
+
+    desc "bumpfile TYPE [PRERELEASE_TYPE]", "Bump version number in VERSION file only"\
+    "(type is major, minor, patch, prerelease or auto). Does not create tag."
+    method_option :default, type: :string, aliases: "-d" # TODO
+    def bumpfile(type, prerelease_type = nil)
+      current_version.bump! type, options.merge(prerelease_type: prerelease_type)
+      begin
+        say "Writing files: #{version_files.join(', ')}", :yellow
+        write_version
+        say "Wrote: #{current_version}", :green
+      rescue => e
+        say "Writing #{current_version} failed due to error", :red
+        say e.to_s, :red
+        if e.respond_to? :status_code
+          exit e.status_code
+        else
+          exit 1
+        end
+      end
+    end
+
+    desc "tag", "Create tag in SCM based on current VERSION file version (does not increment)"
+    method_option :default, type: :string, aliases: "-d"
+    def tag()
+      begin
+        @current_version = ::ThorSCMVersion.versioner.from_file
+        say "Creating and pushing tags", :yellow
+        current_version.tag
         say "Tagged: #{current_version}", :green
       rescue => e
         say "Tagging #{current_version} failed due to error", :red

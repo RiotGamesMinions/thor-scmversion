@@ -29,6 +29,17 @@ module ThorSCMVersion
     # Default file to write the current version to
     VERSION_FILENAME = 'VERSION'
     class << self
+
+      # Retrieve version from file named VERSION at path
+      #
+      # @param [String] path Path to repository (containing VERSION file)
+      # @return [Array<ScmVersion>]
+      def from_file(path = '.')
+        filepath = File.join(path, 'VERSION')
+        fileversion = File.open(filepath).read
+        from_tag(fileversion)
+      end
+
       # Retrieve all versions from the repository contained at path
       #
       # @param [String] path Path to the repository
