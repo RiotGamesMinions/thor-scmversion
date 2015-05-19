@@ -13,7 +13,7 @@ module ThorSCMVersion
     namespace "version"
 
     desc "bump TYPE [PRERELEASE_TYPE]", "Bump version number (type is major, minor, patch, prerelease or auto)"\
-    "in VERSION file and create tag."
+    " in VERSION file and create tag."
     method_option :default, type: :string, aliases: "-d"
     def bump(type, prerelease_type = nil)
       current_version.bump! type, options.merge(prerelease_type: prerelease_type)
@@ -35,7 +35,7 @@ module ThorSCMVersion
     end
 
     desc "bumpfile TYPE [PRERELEASE_TYPE]", "Bump version number in VERSION file only"\
-    "(type is major, minor, patch, prerelease or auto). Does not create tag."
+    " (type is major, minor, patch, prerelease or auto). Does not create tag."
     method_option :default, type: :string, aliases: "-d" # TODO
     def bumpfile(type, prerelease_type = nil)
       current_version.bump! type, options.merge(prerelease_type: prerelease_type)
