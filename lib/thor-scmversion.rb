@@ -16,7 +16,7 @@ module ThorSCMVersion
     " in VERSION file and create tag."
     method_option :default, type: :string, aliases: "-d"
     def bump(type, prerelease_type = nil)
-      current_version.bump! type, options.merge(prerelease_type: prerelease_type)
+      current_version.bump! type, options.merge(prerelease_type: prerelease_type, file_only: false)
       begin
         say "Creating and pushing tags", :yellow
         current_version.tag
@@ -35,11 +35,16 @@ module ThorSCMVersion
     end
 
     desc "bumpfile TYPE [PRERELEASE_TYPE]", "Bump version number in VERSION file only"\
-    " (type is major, minor, patch, prerelease or auto). Does not create tag."
+    " (type is major, minor, patch or prerelease). Does not create tag."
     method_option :default, type: :string, aliases: "-d" # TODO
     def bumpfile(type, prerelease_type = nil)
-      current_version.bump! type, options.merge(prerelease_type: prerelease_type)
+      if type == 'auto'
+        puts "Auto bump type is not supported for bumpfile as it relies on scm commit messages"
+        exit 1
+      end
       begin
+        @current_version = ::ThorSCMVersion.versioner.from_file
+        current_version.bump! type, options.merge(prerelease_type: prerelease_type, file_only: true)
         say "Writing files: #{version_files.join(', ')}", :yellow
         write_version
         say "Wrote: #{current_version}", :green
