@@ -14,6 +14,8 @@ Given /^I have a git project with VERSION file of version '(.*)'$/ do |version|
     $?.success?.should be true
     `git commit -m "initial commit"`
     $?.success?.should be true
+    `git tag 0.0.1`
+    $?.success?.should be true
     `git push origin master -u --tags`
     $?.success?.should be true
     setup_directory

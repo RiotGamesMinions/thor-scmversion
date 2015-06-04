@@ -22,6 +22,9 @@ Feature: Bumpfile
       | git |    1.0.0-alpha.5 | prerelease beta   |          1.0.0-beta.1 |                 |
       | git |            1.0.0 | build             |         1.0.0+build.2 |                 |
       | git |    1.0.0-alpha.3 | build             | 1.0.0-alpha.3+build.2 |                 |
+      | git |            1.0.0 | auto              |                 1.0.1 | --default patch |
+      | git |            1.0.0 | auto              |                 1.0.1 | -d patch        |
+      | git |            1.0.0 | auto              |         1.0.0+build.2 |                 |
       | p4  |            1.0.0 | patch             |                 1.0.1 |                 |
       | p4  |            1.0.0 | minor             |                 1.1.0 |                 |
       | p4  |            1.0.0 | major             |                 2.0.0 |                 |

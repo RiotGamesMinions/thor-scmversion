@@ -36,12 +36,8 @@ module ThorSCMVersion
 
     desc "bumpfile TYPE [PRERELEASE_TYPE]", "Bump version number in VERSION file only"\
     " (type is major, minor, patch or prerelease). Does not create tag."
-    method_option :default, type: :string, aliases: "-d" # TODO
+    method_option :default, type: :string, aliases: "-d"
     def bumpfile(type, prerelease_type = nil)
-      if type == 'auto'
-        puts "Auto bump type is not supported for bumpfile as it relies on scm commit messages"
-        exit 1
-      end
       begin
         @current_version = ::ThorSCMVersion.versioner.from_file
         current_version.bump! type, options.merge(prerelease_type: prerelease_type, file_only: true)
@@ -59,7 +55,7 @@ module ThorSCMVersion
       end
     end
 
-    desc "tag", "Create tag in SCM based on current VERSION file version (does not increment)"
+    desc "tag", "Create tag in SCM based on current VERSION file version (does not increment version)"
     method_option :default, type: :string, aliases: "-d"
     def tag()
       begin
