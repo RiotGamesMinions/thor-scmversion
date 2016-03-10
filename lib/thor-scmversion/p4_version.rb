@@ -9,12 +9,12 @@ module ThorSCMVersion
     def initialize(config_option)
       @config_option = config_option
     end
-    
+
     def message
       "#{@config_option} is not set in your environment."
     end
   end
-  
+
   module Perforce
     class << self
       def check_environment
@@ -22,11 +22,11 @@ module ThorSCMVersion
           raise MissingP4ConfigException.new(config) if ENV[config].nil? or ENV[config].empty?
         }
       end
-      
+
       def set
         ShellUtils.sh "p4 set"
       end
-      
+
       def parse_and_set_p4_set
         p4_set = set
         parsed_p4_config = p4_set.split("\n").inject({}) do |p4_config, line|
@@ -35,10 +35,10 @@ module ThorSCMVersion
           p4_config[key] = value
           p4_config
         end
-        
+
         parsed_p4_config.each {|key,value| ENV[key] = value}
       end
-      
+
       def connection
         parse_and_set_p4_set
         check_environment
@@ -63,11 +63,15 @@ module ThorSCMVersion
 
           if current_versions.empty?
             first_instance = new(0, 0, 0)
-          end 
+          end
 
           current_versions << first_instance if current_versions.empty?
           current_versions
         end
+      end
+
+      def latest_from_path(path)
+        all_from_path(path).first
       end
 
       def depot_path(path)
@@ -85,7 +89,7 @@ module ThorSCMVersion
       end
 
       def get_thor_scmversion_labels(labels, p4_module_name)
-        labels.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}        
+        labels.select{|label| label.split(" ")[1].gsub("#{p4_module_name}-", "").match(ScmVersion::VERSION_FORMAT)}
       end
     end
 
@@ -94,7 +98,7 @@ module ThorSCMVersion
       self.p4_module_name = self.class.module_name('.')
       super
     end
-    
+
     attr_accessor :version_file_path
     attr_accessor :p4_depot_path
     attr_accessor :p4_module_name
@@ -103,7 +107,7 @@ module ThorSCMVersion
       # noop
       # p4 always has labels available, you just have to ask the server for them.
     end
-    
+
     def tag
       if ThorSCMVersion.windows?
         `type "#{File.expand_path(get_p4_label_file).gsub(File::Separator, File::ALT_SEPARATOR)}" | p4 label -i`
@@ -120,7 +124,7 @@ module ThorSCMVersion
     private
 
       def get_label_name
-        "#{p4_module_name}-#{self}"  
+        "#{p4_module_name}-#{self}"
       end
 
       def get_p4_label_template

@@ -2,13 +2,22 @@ require 'open3'
 
 module ThorSCMVersion
   class GitVersion < ScmVersion
-    class << self          
+    class << self
       def all_from_path(path)
         Dir.chdir(path) do
           tags = Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
           tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
             .collect { |tag| from_tag(tag) }
             .select { |tag| contained_in_current_branch?(tag) }.sort.reverse
+        end
+      end
+
+      def latest_from_path(path)
+        Dir.chdir(path) do
+          tags = Open3.popen3("git tag") { |stdin, stdout, stderr| stdout.read }.split(/\n/)
+          tags.select { |tag| tag.match(ScmVersion::VERSION_FORMAT) }
+            .collect { |tag| from_tag(tag) }.sort.reverse
+            .find { |tag| contained_in_current_branch?(tag) }
         end
       end
 
@@ -20,7 +29,7 @@ module ThorSCMVersion
         ShellUtils.sh("git fetch --all")
       end
     end
-        
+
     def tag
       begin
         ShellUtils.sh "git tag -a -m \"Version #{self}\" #{self}"

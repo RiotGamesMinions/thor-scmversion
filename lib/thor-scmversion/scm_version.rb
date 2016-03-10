@@ -16,7 +16,7 @@ module ThorSCMVersion
   # author Josiah Kiehl <josiah@skirmisher.net>
   class ScmVersion
     include Comparable
-    
+
     # Tags not matching this format will not show up in the tags list
     #
     # Examples:
@@ -35,7 +35,7 @@ module ThorSCMVersion
       # @return [Array<ScmVersion>]
       def from_path(path = '.')
         retrieve_tags
-        all_from_path(path).first || new(0,0,1)
+        latest_from_path(path) || new(0,0,1)
       end
 
       # Create an ScmVersion object from a tag
@@ -69,7 +69,7 @@ module ThorSCMVersion
     end
 
     # Bumps the version in place
-    # 
+    #
     # @param [Symbol] type Type of bump to be performed
     # @param [String] prerelease_type Type of prerelease to bump to when doing a :prerelease bump
     # @return [ScmVersion]
@@ -78,7 +78,7 @@ module ThorSCMVersion
       when :auto
         self.auto_bump(options)
       when :major
-        self.major += 1        
+        self.major += 1
       when :minor
         self.minor += 1
       when :patch
@@ -114,12 +114,12 @@ module ThorSCMVersion
           self.minor = 0
         }],
        [:minor, Proc.new {
-          self.patch = 0 
+          self.patch = 0
         }],
        [:patch, Proc.new {
           self.prerelease = nil
         }],
-       [:prerelease, Proc.new { 
+       [:prerelease, Proc.new {
           self.build = 1
         }]].each do |matcher, reset_proc|
         next unless matched or type.to_sym == matcher
@@ -134,14 +134,14 @@ module ThorSCMVersion
     # @param [Array<String>] files List of files to write
     def write_version(files = [ScmVersion::VERSION_FILENAME])
       files.each do |ver_file|
-        File.open(ver_file, 'w+') do |f| 
+        File.open(ver_file, 'w+') do |f|
           f.write self.to_s
         end
       end
       self
     end
 
-    # Create the tag in the SCM corresponding to the version contained in self. 
+    # Create the tag in the SCM corresponding to the version contained in self.
     # Abstract method. Must be implemented by subclasses.
     def tag
       raise NotImplementedError
@@ -164,7 +164,7 @@ module ThorSCMVersion
     def <=>(other)
       return unless other.is_a?(self.class)
       return 0 if self.version == other.version
-      
+
       [:major, :minor, :patch, :prerelease, :build].each do |segment|
         next      if self.send(segment) == other.send(segment)
         return  1 if self.send(segment) > other.send(segment)
