@@ -1,3 +1,10 @@
+## NOTE
+
+This project is not under active development. If it isn't working, please check https://github.com/RiotGamesMinions/thor-scmversion/issues/39 and see if that is your problem, too.
+
+You may also want to look at https://github.com/Atalanta/knife-cookbook-bump and see if it meets your needs.
+
+
 # Thor::SCMVersion
 
 Thor tasks to manage a VERSION file based on SCM tags, for use in
