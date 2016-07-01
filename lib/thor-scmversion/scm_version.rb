@@ -29,6 +29,23 @@ module ThorSCMVersion
     # Default file to write the current version to
     VERSION_FILENAME = 'VERSION'
     class << self
+
+      # Retrieve version from file named VERSION at path
+      #
+      # @param [String] path Path to repository (containing VERSION file)
+      # @return [Array<ScmVersion>]
+      def from_file(path = '.')
+        retrieve_tags
+        filepath = File.join(path, 'VERSION')
+        if File.exists?(filepath)
+          fileversion = File.open(filepath).read
+          from_tag(fileversion)
+        else
+          File.open(filepath, 'w+') { |file| file.write('0.0.1') }
+          new(0,0,1)
+        end
+      end
+
       # Retrieve all versions from the repository contained at path
       #
       # @param [String] path Path to the repository
@@ -100,7 +117,11 @@ module ThorSCMVersion
       else
         raise "Invalid release type: #{type}. Valid types are: major, minor, patch, or auto"
       end
-      raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_path
+      if options[:file_only]
+        raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_file
+      else
+        raise "Version: #{self.to_s} is less than or equal to the existing version." if self <= self.class.from_path
+      end
       reset_for type unless type == :auto
       self
     end

@@ -3,23 +3,23 @@ require 'securerandom'
 Given /^I have a git project of version '(.*)'$/ do |version|
   Dir.chdir(origin_dir) do
     `git init`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git config receive.denyCurrentBranch ignore`
-    $?.success?.should be_true
+    $?.success?.should be true
   end
   Dir.chdir(project_dir) do
     `git clone file://#{origin_dir}/.git .`
-    $?.success?.should be_true
+    $?.success?.should be true
     `touch README`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git add README`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git commit -m "initial commit"`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git tag -a -m "Version #{version}" #{version}`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git push origin master -u --tags`
-    $?.success?.should be_true
+    $?.success?.should be true
     setup_directory
   end
 end
@@ -109,15 +109,15 @@ end
 Then(/^there is a version '(.+)' on another branch$/) do |version|
   Dir.chdir(project_dir) do
     `git checkout -b another_branch`
-    $?.success?.should be_true
+    $?.success?.should be true
     `echo anotherbranch > README`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git commit -am 'commit'`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git tag #{version}`
-    $?.success?.should be_true
+    $?.success?.should be true
     `git checkout master`
-    $?.success?.should be_true
+    $?.success?.should be true
   end
 end
 
@@ -130,7 +130,7 @@ end
 Given(/^.git is a file pointing to the .git folder in a parent module$/) do
   project_git_path = File.join(project_dir, '.git')
   git_folder_path  = File.join(parent_module_dir, '.git')
-  File.directory?( project_git_path ).should be_true
+  File.directory?( project_git_path ).should be true
   File.rename project_git_path, git_folder_path
   `echo "gitdir: #{ git_folder_path }" > "#{ project_git_path }"`
 end

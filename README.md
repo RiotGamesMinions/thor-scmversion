@@ -47,16 +47,20 @@ All you need to do is require it at the top of your Thorfile:
 
     require 'thor/scmversion'
 
-Now when you list your thor tasks you'll see 2 new ones.
+Now when you list your thor tasks you'll see 4 new ones.
 
     $ thor list
     
     version
     -------
-    thor version:bump TYPE [PRERELEASE_TYPE]  # Bump version number (type is major, minor, patch, prerelease or auto)
-                                              # Prerelease allows an additional parameter to be passed which is used 
-                                              # as the prerelease type.
-    thor version:current    # Show current SCM tagged version
+    thor version:bump TYPE [PRERELEASE_TYPE]      # Bump version number (type is major, minor, patch, prerelease or auto)
+                                                  # Prerelease allows an additional parameter to be passed which is used 
+                                                  # as the prerelease type.
+    thor version:bumpfile TYPE [PRERELEASE_TYPE]  # Bump version number in VERSION file only (type is major, minor, patch
+                                                  # or prerelease). Does not create tag.
+    thor version:current                          # Show current SCM tagged version
+    thor version:tag                              # Create tag in SCM based on current VERSION file version (does not
+                                                  # increment version)
 
 Usage Examples:
 
@@ -119,9 +123,20 @@ especially well with a CI server, allowing you to never have to directly
 manage versions at all. If no commits are tagged, the build number for the
 current version will be bumped instead.
 
-NOTE: auto bumping currently only works for Git repos. For Perforce repos,
-auto is the same as build.
+NOTE: auto bumping currently only works for Git repos using bump. For Perforce
+repos or when using bumpfile auto is the same as build.
 
+### Bumpfile and Tag
+
+The version:bumpfile and version:tag operations were created for less common 
+situations where the version file is needed as a part of the code. If the 
+VERSION file is included in the repository then running version:bump will result
+in a mismatch of the scm tag version and the version in the VERSION file, as
+tagging is performed before updating the VERSION file.
+
+In this situation version:bumpfile can be used with the same parameters as
+version:bump to manage the version file and version:tag can be used to create
+an scm tag from the value in the VERSION file
 
 ## Contributing
 
